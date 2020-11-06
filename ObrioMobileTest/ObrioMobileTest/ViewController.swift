@@ -33,7 +33,6 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     
     func doSearch() {
         if let searchText = searchTField.text {
-//            print("search: \"\(searchText)\"")
             repositories.removeAll()
             tableView.reloadData()
             searchTField.isEnabled = false
@@ -42,7 +41,11 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
             let group = DispatchGroup()
             
             doSearchRequest(searchString: searchText, page: 1, dispatchGroup: group)
-            doSearchRequest(searchString: searchText, page: 2, dispatchGroup: group)
+            
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(10)) { [weak self] in
+                self?.doSearchRequest(searchString: searchText, page: 2, dispatchGroup: group)
+            }
+            
             group.notify(queue: DispatchQueue.main ) { [weak self] in
                 self?.tableView.reloadData()
                 self?.searchTField.isEnabled = true

@@ -34,15 +34,25 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     func doSearch() {
         if let searchText = searchTField.text {
 //            print("search: \"\(searchText)\"")
-            let semaphore = DispatchSemaphore(value: 1)
+            repositories.removeAll()
+            tableView.reloadData()
+            searchTField.isEnabled = false
+            searchBtn.isEnabled = false
             
-            doSearchRequest(searchString: searchText, page: 1, semaphore: semaphore)
-            doSearchRequest(searchString: searchText, page: 2, semaphore: semaphore)
-            print("all done")
+            let group = DispatchGroup()
+            
+            doSearchRequest(searchString: searchText, page: 1, dispatchGroup: group)
+            doSearchRequest(searchString: searchText, page: 2, dispatchGroup: group)
+            group.notify(queue: DispatchQueue.main ) { [weak self] in
+                self?.tableView.reloadData()
+                self?.searchTField.isEnabled = true
+                self?.searchBtn.isEnabled = true
+                print("all done: \(self?.repositories.count)")
+            }
         }
     }
     
-    func doSearchRequest(searchString: String, page: Int, semaphore:DispatchSemaphore) {
+    func doSearchRequest(searchString: String, page: Int, dispatchGroup: DispatchGroup) {
         
         guard let url = URL(string:"https://api.github.com/search/repositories") else {
             return
@@ -56,6 +66,9 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
             "page": page
         ] as [String : Any]
         
+        dispatchGroup.enter()
+        print("doSearchRequest: \(String(page))")
+        
         Alamofire.request(
             url,
             method: .get,
@@ -64,11 +77,13 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
         .validate()
         .responseJSON { [weak self] response in
             guard response.result.isSuccess else {
+                dispatchGroup.leave()
                 return
             }
             
             guard let value = response.result.value as? [String: Any],
                   let items = value["items"] as? [[String: Any]] else {
+                dispatchGroup.leave()
                 return
             }
             var names: [String] = []
@@ -77,9 +92,10 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
                     names.append(name)
                 }
             }
-            print(names.count)
             
-            print(value)
+            self?.repositories += names
+            
+            dispatchGroup.leave()
         }
     }
     

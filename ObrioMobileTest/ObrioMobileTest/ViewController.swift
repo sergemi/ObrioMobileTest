@@ -13,6 +13,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     @IBOutlet weak var searchTField: UITextField!
     @IBOutlet weak var searchBtn: UIButton!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var repositories: [String] = []//["first", "second", "third"]
     
@@ -37,6 +38,8 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
             tableView.reloadData()
             searchTField.isEnabled = false
             searchBtn.isEnabled = false
+            activityIndicator.isHidden = false
+            activityIndicator.startAnimating()
             
             let group = DispatchGroup()
             
@@ -50,6 +53,9 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
                 self?.tableView.reloadData()
                 self?.searchTField.isEnabled = true
                 self?.searchBtn.isEnabled = true
+                
+                self?.activityIndicator.stopAnimating()
+                self?.activityIndicator.isHidden = true
                 print("all done: \(self?.repositories.count)")
             }
         }
@@ -80,6 +86,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
         .validate()
         .responseJSON { [weak self] response in
             guard response.result.isSuccess else {
+                self?.showAlert(header: "Error", text: response.error?.localizedDescription ?? "Unknown error")
                 dispatchGroup.leave()
                 return
             }
@@ -100,6 +107,17 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
             
             dispatchGroup.leave()
         }
+    }
+    
+    func showAlert(header:String, text: String) {
+        let alertController = UIAlertController(title: header, message: text, preferredStyle: .alert)
+        
+        let OKAction = UIAlertAction(title: "OK", style: .default) { (action:UIAlertAction!) in
+                    print("Ok button tapped");
+                }
+        alertController.addAction(OKAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
 // MARK: UITableViewDataSource

@@ -43,6 +43,13 @@
                                 <rect key="frame" x="20" y="93" width="374" height="749"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="IzC-xw-iMT" userLabel="activityIndicator">
+                                <rect key="frame" x="182" y="442.5" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="2Lx-mk-7bE"/>
+                                    <constraint firstAttribute="height" constant="50" id="4Xx-E9-6sG"/>
+                                </constraints>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -50,15 +57,18 @@
                             <constraint firstItem="kfd-DT-mh9" firstAttribute="top" secondItem="1iz-od-6Y6" secondAttribute="bottom" constant="5" id="3uX-Pq-eUC"/>
                             <constraint firstItem="kfd-DT-mh9" firstAttribute="trailing" secondItem="NCy-E0-zoZ" secondAttribute="trailing" id="F6S-za-CoH"/>
                             <constraint firstItem="NCy-E0-zoZ" firstAttribute="centerY" secondItem="1iz-od-6Y6" secondAttribute="centerY" id="Hej-WJ-PEe"/>
+                            <constraint firstItem="IzC-xw-iMT" firstAttribute="centerY" secondItem="kfd-DT-mh9" secondAttribute="centerY" id="KZc-Kk-shM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="NCy-E0-zoZ" secondAttribute="trailing" constant="20" id="QJF-NE-EfZ"/>
                             <constraint firstItem="kfd-DT-mh9" firstAttribute="leading" secondItem="1iz-od-6Y6" secondAttribute="leading" id="aBD-rr-hyg"/>
                             <constraint firstItem="1iz-od-6Y6" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="mPY-k7-AyA"/>
                             <constraint firstItem="NCy-E0-zoZ" firstAttribute="leading" secondItem="1iz-od-6Y6" secondAttribute="trailing" constant="5" id="mWc-yR-qTW"/>
+                            <constraint firstItem="IzC-xw-iMT" firstAttribute="centerX" secondItem="kfd-DT-mh9" secondAttribute="centerX" id="oRt-Tc-oH5"/>
                             <constraint firstItem="1iz-od-6Y6" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="stm-NT-jl4"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="kfd-DT-mh9" secondAttribute="bottom" constant="20" id="vyx-Ui-22Y"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="IzC-xw-iMT" id="PWn-wA-sc0"/>
                         <outlet property="searchBtn" destination="NCy-E0-zoZ" id="Tex-4h-AhS"/>
                         <outlet property="searchTField" destination="1iz-od-6Y6" id="lN0-Ku-Znh"/>
                         <outlet property="tableView" destination="kfd-DT-mh9" id="DjR-11-4Ej"/>

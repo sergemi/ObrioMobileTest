@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSource {
     
@@ -13,7 +14,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     @IBOutlet weak var searchBtn: UIButton!
     @IBOutlet weak var tableView: UITableView!
     
-    var repositories = ["first", "second", "third"]
+    var repositories: [String] = []//["first", "second", "third"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,7 +33,53 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     
     func doSearch() {
         if let searchText = searchTField.text {
-            print("search: \"\(searchText)\"")
+//            print("search: \"\(searchText)\"")
+            let semaphore = DispatchSemaphore(value: 1)
+            
+            doSearchRequest(searchString: searchText, page: 1, semaphore: semaphore)
+            doSearchRequest(searchString: searchText, page: 2, semaphore: semaphore)
+            print("all done")
+        }
+    }
+    
+    func doSearchRequest(searchString: String, page: Int, semaphore:DispatchSemaphore) {
+        
+        guard let url = URL(string:"https://api.github.com/search/repositories") else {
+            return
+        }
+        
+        let params = [
+            "q": searchString,
+            "sort": "stars",
+            "order": "desc",
+            "per_page": 15,
+            "page": page
+        ] as [String : Any]
+        
+        Alamofire.request(
+            url,
+            method: .get,
+            parameters: params
+        )
+        .validate()
+        .responseJSON { [weak self] response in
+            guard response.result.isSuccess else {
+                return
+            }
+            
+            guard let value = response.result.value as? [String: Any],
+                  let items = value["items"] as? [[String: Any]] else {
+                return
+            }
+            var names: [String] = []
+            for item in items {
+                if let name = item["name"] as? String {
+                    names.append(name)
+                }
+            }
+            print(names.count)
+            
+            print(value)
         }
     }
     

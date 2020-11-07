@@ -15,13 +15,15 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var repositories: [String] = []//["first", "second", "third"]
+    var repositories: [String] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         searchTField.delegate = self
         tableView.dataSource = self
+        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TableViewCell")
     }
     
     @IBAction func onSearchBtn(_ sender: Any) {
@@ -45,7 +47,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
             
             doSearchRequest(searchString: searchText, page: 1, dispatchGroup: group)
             
-            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(10)) { [weak self] in
+            DispatchQueue.global().asyncAfter(deadline: .now() + .milliseconds(20)) { [weak self] in
                 self?.doSearchRequest(searchString: searchText, page: 2, dispatchGroup: group)
             }
             
@@ -56,7 +58,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
                 
                 self?.activityIndicator.stopAnimating()
                 self?.activityIndicator.isHidden = true
-                print("all done: \(self?.repositories.count)")
+                print("all done: \(String(describing: self?.repositories.count))")
             }
         }
     }
@@ -126,7 +128,8 @@ class ViewController: UIViewController, UITextFieldDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TableViewCell", for: indexPath)
+            
         cell.textLabel?.text = repositories[indexPath.row]
         return cell
     }
